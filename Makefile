@@ -10,7 +10,6 @@ TARGET=stm32prog
 .PHONY: all clean
 
 all: $(TARGET)
-	size $^
 	ctags -R .
 
 $(TARGET): $(OBJS)
