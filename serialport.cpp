@@ -27,13 +27,14 @@ bool SerialPort::open() {
 	}
 
 	tcgetattr(fd, &this->oldtio); // store the current tty attr
+	newtio = oldtio;
 
-	newtio.c_iflag = IGNBRK | IGNPAR; // ignore BREAK and Parity
+	newtio.c_iflag = IGNBRK | INPCK; // ignore BREAK, enable input parity check
 	newtio.c_oflag = 0;
-	newtio.c_cflag = B115200 | CS8 | CREAD | CLOCAL; // enable read, 115200, 8bit, ignore model control line
+	newtio.c_cflag = B115200 | CS8 | CREAD | CLOCAL | PARENB; // enable read, 115200, 8bit, ignore model control line, parity
 	newtio.c_lflag = 0; // non-canonical
 
-	// blocking read
+	// blocking read for one char
 	newtio.c_cc[VTIME] = 0;
 	newtio.c_cc[VMIN] = 1;
 
@@ -49,16 +50,25 @@ void SerialPort::close() {
 
 char SerialPort::readChar() {
 	char ret;
+	tcflush(fd, TCIFLUSH); //clear the receiving buffer
 	read(fd, &ret, 1); // read 1 byte
 	return ret;
 }
 
 void SerialPort::writeChar(char ch) {
-	write(fd, &ch, 1);
+	tcflush(fd, TCOFLUSH); //clear the transmission buffer
+	int ret = write(fd, &ch, 1);
+	if( ret < -1 ) {
+		throw "Transmission failed";
+	}
 }
 
 void SerialPort::writeStr(std::string str) {
 	for( auto ch : str ) {
 		this->writeChar(ch);
 	}
+}
+
+void SerialPort::flush() {
+	tcflush(fd, TCIOFLUSH);
 }

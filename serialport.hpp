@@ -13,4 +13,5 @@ class SerialPort {
 		char readChar();
 		void writeChar(char ch);
 		void writeStr(std::string str);
+		void flush();
 };
