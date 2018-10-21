@@ -11,6 +11,7 @@ TARGET=stm32prog
 
 all: $(TARGET)
 	size $^
+	ctags -R .
 
 $(TARGET): $(OBJS)
 	$(CPP) -o $@ $^
