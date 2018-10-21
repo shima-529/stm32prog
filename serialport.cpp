@@ -7,7 +7,7 @@
 #include <unistd.h>
 
 SerialPort::SerialPort(const char *portPath) {
-	this->fd = ::open(portPath, O_RDWR | O_NOCTTY);
+	this->fd = ::open(portPath, O_RDWR | O_NOCTTY | O_NONBLOCK);
 
 	this->open();
 }
@@ -26,6 +26,7 @@ bool SerialPort::open() {
 		throw "Failed to open port";
 		return false;
 	}
+	fcntl(fd, F_SETFL, 0);
 
 	tcgetattr(fd, &this->oldtio); // store the current tty attr
 	newtio = oldtio;
@@ -35,7 +36,7 @@ bool SerialPort::open() {
 	newtio.c_cflag = B115200 | CS8 | CREAD | CLOCAL | PARENB; // enable read, 115200, 8bit, ignore model control line, parity
 	newtio.c_lflag = 0; // non-canonical
 
-	// blocking read for one char
+	// non-blocking read
 	newtio.c_cc[VTIME] = 0;
 	newtio.c_cc[VMIN] = 1;
 
@@ -65,7 +66,7 @@ void SerialPort::writeChar(uint8_t ch) {
 }
 
 int SerialPort::writeStr(uint8_t *str, int length) {
-	tcflush(fd, TCIFLUSH); //clear the receiving buffer to avoid buffer overflow
+	// tcflush(fd, TCIFLUSH); //clear the receiving buffer to avoid buffer overflow
 	int ret = write(fd, str, length);
 	return ret;
 }

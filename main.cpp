@@ -49,11 +49,12 @@ int main(int argc, char *argv[]){
 
 	std::cout << "Binary Size: " << std::dec << binSize << std::endl;
 	uint32_t offset;
-	offset = 0;
-	while( offset * 256 < binSize ) {
-		binary.read(reinterpret_cast<char *>(&buf[offset * 256]), std::min(256u, binSize - offset * 256));
-		offset++;
-	}
+	/* offset = 0; */
+	/* while( offset * 256 < binSize ) { */
+		// binary.read(reinterpret_cast<char *>(&buf[offset * 256]), std::min(256u, binSize - offset * 256));
+	// 	offset++;
+	// }
+	binary.read(reinterpret_cast<char *>(buf), binSize);
 
 	std::cout << std::endl << "Flash: " << std::endl;
 	offset = 0;
