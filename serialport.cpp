@@ -23,6 +23,7 @@ SerialPort::~SerialPort() {
 
 bool SerialPort::open() {
 	if( fd < 0 ) {
+		throw "Failed to open port";
 		return false;
 	}
 
@@ -55,18 +56,18 @@ char SerialPort::readChar() {
 	return ret;
 }
 
-void SerialPort::writeChar(char ch) {
-	tcflush(fd, TCOFLUSH); //clear the transmission buffer
+void SerialPort::writeChar(uint8_t ch) {
+	tcflush(fd, TCIFLUSH); //clear the receiving buffer to avoid buffer overflow
 	int ret = write(fd, &ch, 1);
 	if( ret < -1 ) {
 		throw "Transmission failed";
 	}
 }
 
-void SerialPort::writeStr(std::string str) {
-	for( auto ch : str ) {
-		this->writeChar(ch);
-	}
+int SerialPort::writeStr(uint8_t *str, int length) {
+	tcflush(fd, TCIFLUSH); //clear the receiving buffer to avoid buffer overflow
+	int ret = write(fd, str, length);
+	return ret;
 }
 
 void SerialPort::flush() {

@@ -11,7 +11,7 @@ class SerialPort {
 		bool open();
 		void close();
 		char readChar();
-		void writeChar(char ch);
-		void writeStr(std::string str);
+		void writeChar(uint8_t ch);
+		int writeStr(uint8_t *str, int length);
 		void flush();
 };
