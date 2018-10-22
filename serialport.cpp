@@ -1,4 +1,5 @@
 #include "serialport.hpp"
+#include "argInfo.hpp"
 
 #include <termios.h>
 #include <fcntl.h>
@@ -6,11 +7,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-SerialPort::SerialPort(const char *portPath) {
+SerialPort::SerialPort(const char *portPath, uint32_t baud, bool parity) {
 	this->fd = ::open(portPath, O_RDWR | O_NOCTTY | O_NDELAY);
-	// this->fd = ::open(portPath, O_RDWR | O_NOCTTY | O_NONBLOCK);
 
-	this->open();
+	this->open(baud, parity);
 }
 
 SerialPort::~SerialPort() {
@@ -22,27 +22,33 @@ SerialPort::~SerialPort() {
 //           tcflag_t c_lflag;      /* local modes */
 //           cc_t     c_cc[NCCS];   /* special characters */
 
-bool SerialPort::open() {
+bool SerialPort::open(uint32_t baud, bool parity) {
 	if( fd < 0 ) {
 		throw "Failed to open port";
 		return false;
 	}
 	fcntl(fd, F_SETFL, 0);
+	ArgInfo::portFd = fd;
 
 	tcgetattr(fd, &this->oldtio); // store the current tty attr
 	tcgetattr(fd, &this->newtio); // store the current tty attr
 	cfmakeraw(&newtio);
-	cfsetispeed(&newtio, B115200);
-	cfsetospeed(&newtio, B115200);
+	cfsetispeed(&newtio, 115200);
+	cfsetospeed(&newtio, 115200);
 
-	newtio.c_iflag = INPCK; // enable input parity check
 	newtio.c_oflag = 0;
-	newtio.c_cflag = CS8 | CREAD | CLOCAL | PARENB; // enable read, 115200, 8bit, ignore model control line, parity
+	newtio.c_cflag = CS8 | CREAD | CLOCAL; // enable read, 115200, 8bit, ignore model control line
 	newtio.c_lflag = 0; // non-canonical
+	if( parity ) {
+		newtio.c_iflag = INPCK; // enable input parity check
+		newtio.c_cflag |= PARENB; // parity
+	}else{
+		newtio.c_iflag = 0;
+	}
 
 	// non-blocking read
 	newtio.c_cc[VTIME] = 5;
-	newtio.c_cc[VMIN] = 0;
+	newtio.c_cc[VMIN] = 1;
 
 	tcflush(fd, TCIFLUSH); // flush
 	tcsetattr(fd, TCSANOW, &this->newtio); // set tty attr immediately
@@ -57,6 +63,12 @@ void SerialPort::close() {
 char SerialPort::readChar() {
 	char ret;
 	read(fd, &ret, 1); // read 1 byte
+	return ret;
+}
+
+int SerialPort::readStr(char *dest, int size) {
+	int ret;
+	ret = read(fd, dest, size);
 	return ret;
 }
 

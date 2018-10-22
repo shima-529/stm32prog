@@ -1,7 +1,7 @@
 #include "serialport.hpp"
 
 class STM32 {
-	SerialPort port;
+	SerialPort *port;
 	constexpr static char ACK = 0x79;
 	constexpr static char INIT = 0x7F;
 	enum {
@@ -11,7 +11,7 @@ class STM32 {
 	bool isACK();
 
 	public:
-	STM32(char *portPath);
+	STM32(SerialPort *port);
 	bool init();
 	void readAllData(uint8_t *dest);
 	bool globalErase();
