@@ -5,12 +5,7 @@
 STM32::STM32(char *portPath) : port(portPath) {}
 
 bool STM32::isACK() {
-	/* while( port.readChar() != ACK ); */
-	/* return true; */
 	return port.readChar() == ACK;
-
-	/* printf("%x\n", port.readChar()); */
-	/* return true; */
 }
 
 bool STM32::init() {
@@ -132,4 +127,26 @@ bool STM32::writeMemory(uint32_t addr, uint8_t *dat, int datSize) {
 	}
 
 	return true;
+}
+
+bool STM32::go(uint32_t addr) {
+	this->port.writeChar(command[GO]);
+	this->port.writeChar(~command[GO]);
+	if( !this->isACK() ) {
+		return false;
+	}
+
+	uint8_t addrs[4];
+	uint8_t checksum;
+
+	checksum = 0;
+	for(int i=0; i<4; i++) {
+		addrs[i] = addr >> (8*(3-i));
+		checksum ^= addrs[i];
+	}
+	this->port.writeStr(addrs, 4);
+	this->port.writeChar(checksum);
+	if( !this->isACK() ) {
+		return false;
+	}
 }

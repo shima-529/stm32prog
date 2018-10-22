@@ -49,20 +49,17 @@ int main(int argc, char *argv[]){
 
 	std::cout << "Binary Size: " << std::dec << binSize << std::endl;
 	uint32_t offset;
-	/* offset = 0; */
-	/* while( offset * 256 < binSize ) { */
-		// binary.read(reinterpret_cast<char *>(&buf[offset * 256]), std::min(256u, binSize - offset * 256));
-	// 	offset++;
-	// }
 	binary.read(reinterpret_cast<char *>(buf), binSize);
 
 	std::cout << std::endl << "Flash: " << std::endl;
 	offset = 0;
 	while( offset * 256 < binSize ) {
-		std::cout << std::dec << offset << std::endl;
+		std::cout << std::dec << offset << "/" << binSize / 256 << "\r";
+		std::cout.flush();
 		bool ret = stm32.writeMemory(0x08000000 + offset * 256, &buf[offset * 256], std::min(256u, binSize - offset * 256));
 		if( ret == false ) std::cout << "Fail" << std::endl;
 		offset++;
 	}
 	std::cout << std::endl;
+	stm32.go(0x08000000);
 }
