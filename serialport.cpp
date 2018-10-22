@@ -33,8 +33,8 @@ bool SerialPort::open(uint32_t baud, bool parity) {
 	tcgetattr(fd, &this->oldtio); // store the current tty attr
 	tcgetattr(fd, &this->newtio); // store the current tty attr
 	cfmakeraw(&newtio);
-	cfsetispeed(&newtio, 115200);
-	cfsetospeed(&newtio, 115200);
+	cfsetispeed(&newtio, baud);
+	cfsetospeed(&newtio, baud);
 
 	newtio.c_oflag = 0;
 	newtio.c_cflag = CS8 | CREAD | CLOCAL; // enable read, 115200, 8bit, ignore model control line

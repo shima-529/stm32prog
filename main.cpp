@@ -85,7 +85,7 @@ int writeOperation(char *portPath) {
 }
 
 int monitorOperation(char *portPath) {
-	SerialPort port(portPath, 115200, false);
+	SerialPort port(portPath, ArgInfo::baud, false);
 
 	SerialMonitor monitor(&port);
 	monitor.startMonitor();
