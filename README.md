@@ -16,5 +16,5 @@ The following operation is now implemented.
 	- `-w` (*e.g.*: `$ ./stm32prog /dev/cu.SerialPort -w /path/to/.bin_file`)
 - Read
 	- `-r` (*e.g.*: `$ ./stm32prog /dev/cu.SerialPort -r /path/to/.bin_file_for_save 64k`)
-- Serial Monitor
+- Serial Monitor(Only for receiving data)
 	- `-m` (*e.g.*: `$ ./stm32prog /dev/cu.SerialPort -m -b 19200`)
