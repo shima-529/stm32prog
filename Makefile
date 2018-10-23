@@ -9,8 +9,11 @@ TARGET=stm32prog
 
 .PHONY: all clean
 
-all: $(TARGET)
+all: $(OBJDIR)/ $(TARGET)
 	ctags -R .
+
+$(OBJDIR)/:
+	mkdir $@
 
 $(TARGET): $(OBJS)
 	$(CPP) -o $@ $^
