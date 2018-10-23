@@ -66,10 +66,16 @@ char SerialPort::readChar() {
 	return ret;
 }
 
-int SerialPort::readStr(char *dest, int size) {
-	int ret;
-	ret = read(fd, dest, size);
-	return ret;
+int SerialPort::readStr(uint8_t *dest, uint32_t size) {
+	while( size > 0 ) {
+		int ret = read(fd, dest, size);
+		if( ret < 0 ) {
+			return -1;
+		}
+		size -= ret;
+		dest += ret;
+	}
+	return 1;
 }
 
 void SerialPort::writeChar(uint8_t ch) {
@@ -79,7 +85,7 @@ void SerialPort::writeChar(uint8_t ch) {
 	}
 }
 
-int SerialPort::writeStr(uint8_t *str, int length) {
+int SerialPort::writeStr(uint8_t *str, uint32_t length) {
 	int ret = write(fd, str, length);
 	return ret;
 }
