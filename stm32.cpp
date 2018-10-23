@@ -89,6 +89,36 @@ bool STM32::eraseAt(unsigned int *pages, int size) {
 	return true;
 }
 
+bool STM32::readMemory(uint32_t addr, uint8_t *dest, int datSize) {
+	this->port->writeChar(command[READ_MEMORY]);
+	this->port->writeChar(~command[READ_MEMORY]);
+	if( !this->isACK() ) {
+		return false;
+	}
+	uint8_t addrs[4];
+	uint8_t checksum;
+
+	checksum = 0;
+	for(int i=0; i<4; i++) {
+		addrs[i] = addr >> (8*(3-i));
+		checksum ^= addrs[i];
+	}
+	this->port->writeStr(addrs, 4);
+	this->port->writeChar(checksum);
+	if( !this->isACK() ) {
+		return false;
+	}
+
+	this->port->writeChar(datSize - 1);
+	this->port->writeChar(~(datSize - 1));
+	if( !this->isACK() ) {
+		return false;
+	}
+	this->port->readStr(dest, datSize);
+
+	return true;
+}
+
 bool STM32::writeMemory(uint32_t addr, uint8_t *dat, int datSize) {
 	if( datSize % 4 != 0 ) {
 		std::cerr << "Data size must be 4bit-aligned." << std::endl;

@@ -17,5 +17,6 @@ class STM32 {
 	bool globalErase();
 	bool eraseAt(unsigned int *pages, int size);
 	bool writeMemory(uint32_t addr, uint8_t *dat, int datSize);
+	bool readMemory(uint32_t addr, uint8_t *dest, int datSize);
 	bool go(uint32_t addr);
 };
