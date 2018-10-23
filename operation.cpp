@@ -28,7 +28,7 @@ namespace Operation {
 		}
 		uint8_t buf[binSize] = {};
 
-		SerialPort port(portPath, 115200, true);
+		SerialPort port(portPath, ArgInfo::baud, true);
 		STM32 stm32(&port);
 		if( !stm32.init() ) {
 			std::cerr << "Initialization failed" << std::endl;
@@ -74,7 +74,7 @@ namespace Operation {
 		}
 		uint8_t buf[size];
 
-		SerialPort port(portPath, 115200, true);
+		SerialPort port(portPath, ArgInfo::baud, true);
 		STM32 stm32(&port);
 		if( !stm32.init() ) {
 			std::cerr << "Initialization failed" << std::endl;
