@@ -33,6 +33,19 @@ bool isValidArguments(int argc, char **argv) {
 				case 'm':
 					ArgInfo::op = ArgInfo::Operation::Monitor;
 					break;
+				case 'r' :
+					if( i + 1 >= argc ) {
+						return false;
+					}
+					ArgInfo::binPath = argv[i+1];
+					ArgInfo::op = ArgInfo::Operation::Read;
+					i++;
+					if( i + 1 >= argc ) {
+						return false;
+					}
+					ArgInfo::sizeStrForRead = argv[i+1];
+					i++;
+					break;
 				default:
 					return false;
 					break;
@@ -69,6 +82,9 @@ int main(int argc, char *argv[]){
 	switch(ArgInfo::op) {
 		case ArgInfo::Operation::Write:
 			ret = Operation::write(argv[1]);
+			break;
+		case ArgInfo::Operation::Read:
+			ret = Operation::read(argv[1]);
 			break;
 		case ArgInfo::Operation::Monitor:
 			ret = Operation::monitor(argv[1]);
