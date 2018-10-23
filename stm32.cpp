@@ -91,10 +91,12 @@ bool STM32::eraseAt(unsigned int *pages, int size) {
 
 bool STM32::writeMemory(uint32_t addr, uint8_t *dat, int datSize) {
 	if( datSize % 4 != 0 ) {
-		throw "Data size must be 4bit-aligned.";
+		std::cerr << "Data size must be 4bit-aligned." << std::endl;
+		return false;
 	}
 	if( addr % 4 != 0 ) {
-		throw "Target address must be 4bit-aligned.";
+		std::cerr << "Target address must be 4bit-aligned." << std::endl;
+		return false;
 	}
 	this->port->writeChar(command[WRITE_MEMORY]);
 	this->port->writeChar(~command[WRITE_MEMORY]);
